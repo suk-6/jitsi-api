@@ -9,4 +9,8 @@ def get_settings():
 
 
 class Settings(BaseSettings):
+    host: str = "localhost"
+    port: int = 8443
+    jwt_app_id: str = "jitsi"
+    jwt_app_secret: str = "jitsi"
     model_config = SettingsConfigDict(env_file=".env")
