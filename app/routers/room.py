@@ -6,11 +6,6 @@ router = APIRouter(
 )
 
 
-@router.get("/join-check")
-async def join_check():
-    return {"message": "Join Check"}
-
-
 @router.get("/new")
 async def new_room():
     return {"message": "New Room"}
