@@ -19,8 +19,3 @@ app.add_middleware(
 )
 
 app.include_router(room)
-
-
-@app.get("/")
-async def root():
-    return {"message": "Jitsi API Server"}
