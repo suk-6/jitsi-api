@@ -1,19 +1,25 @@
 from fastapi import APIRouter
 
+from app.services.room import new, join
+
+from app.models.token import JitsiTokenUser
+
 router = APIRouter(
     prefix="/room",
     tags=["room"],
 )
 
 
-@router.get("/new")
-async def new_room():
-    return {"message": "New Room"}
+@router.post("/new")
+async def new_room(user: JitsiTokenUser):
+    id = await new(user)
+    return {"id": id}
 
 
-@router.get("/join")
-async def join_room():
-    return {"message": "Join Room"}
+@router.post("/join")
+async def join_room(user: JitsiTokenUser, room_id: str):
+    url = await join(user, room_id)
+    return {"url": url}
 
 
 @router.get("/leave")
