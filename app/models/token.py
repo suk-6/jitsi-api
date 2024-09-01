@@ -16,6 +16,7 @@ class JitsiTokenPayload(BaseModel):
     iss: str  # Issuer
     sub: str  # Subject (Public Host)
     room: str  # Room Name
+    room_id: str  # Room ID
     exp: int  # Expiration Time
     nbf: int  # Not Before Time
     context: JitsiTokenContext
