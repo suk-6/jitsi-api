@@ -13,6 +13,7 @@ pydantic = "^2.8.2"
 pydantic-settings = "^2.4.0"
 redis = "^5.0.8"
 redis-om = "^0.3.2"
+pyjwt = "^2.9.0"
 
 
 [build-system]
