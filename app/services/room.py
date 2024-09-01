@@ -47,3 +47,24 @@ async def join(user: JitsiTokenUser, room_id: str):
     token = jwt.encode(token_data, env.jwt_app_secret, algorithm="HS256")
 
     return f"{env.front_url}/{room["name"]}?token={token}"
+
+
+async def leave(token: str):
+    token_data: JitsiTokenPayload = jwt.decode(token, env.jwt_app_secret, algorithms=["HS256"], audience=env.jwt_app_id)
+    room_id = token_data['room_id']
+    email = token_data['context']['user']['email']
+
+    room: RoomModel = json.loads(rd.get(f"room:{room_id}"))
+    room["participants"] = [p for p in room["participants"] if p["email"] != email]
+    rd.set(f"room:{room_id}", json.dumps(room))
+
+    if len(room["participants"]) == 0:
+        await terminate(room_id)
+
+
+async def terminate(room_id: str):
+    room: RoomModel = json.loads(rd.get(f"room:{room_id}"))
+    room["status"] = Status.TERMINATED.value
+    rd.delete(f"room:{room_id}")
+
+    # 추후 DB에 저장하는 로직 추가
