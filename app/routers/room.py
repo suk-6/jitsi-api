@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from app.services.room import new, join
+from app.services.room import new, join, leave
 
 from app.models.token import JitsiTokenUser
 
@@ -23,10 +23,7 @@ async def join_room(user: JitsiTokenUser, room_id: str):
 
 
 @router.get("/leave")
-async def leave_room():
-    return {"message": "Leave Room"}
+async def leave_room(token: str):
+    await leave(token)
 
-
-@router.get("/terminate")
-async def terminate_room():
-    return {"message": "Terminate Room"}
+    return True
