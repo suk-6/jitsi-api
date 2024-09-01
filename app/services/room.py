@@ -5,6 +5,8 @@ import string
 from datetime import datetime
 from uuid import uuid4
 
+from fastapi import HTTPException
+
 from app.config import Settings
 from app.databases.redis import rd
 
@@ -29,9 +31,11 @@ async def new(user: JitsiTokenUser):
 
 
 async def join(user: JitsiTokenUser, room_id: str):
+    raw_room = rd.get(f"room:{room_id}")
+    if not raw_room:
+        raise HTTPException(status_code=404, detail="Room not found")
+
     room: RoomModel = json.loads(rd.get(f"room:{room_id}"))
-    room["participants"].append(user.model_dump())
-    rd.set(f"room:{room_id}", json.dumps(room))
 
     token_data: JitsiTokenPayload = {
         "aud": env.jwt_app_id,
@@ -46,11 +50,22 @@ async def join(user: JitsiTokenUser, room_id: str):
 
     token = jwt.encode(token_data, env.jwt_app_secret, algorithm="HS256")
 
+    for p in room["participants"]:
+        if p["email"] == user.email:
+            return f"{env.front_url}/{room['name']}?token={token}"
+
+    room["participants"].append(user.model_dump())
+    rd.set(f"room:{room_id}", json.dumps(room))
+
     return f"{env.front_url}/{room["name"]}?token={token}"
 
 
 async def leave(token: str):
-    token_data: JitsiTokenPayload = jwt.decode(token, env.jwt_app_secret, algorithms=["HS256"], audience=env.jwt_app_id)
+    try:
+        token_data: JitsiTokenPayload = jwt.decode(token, env.jwt_app_secret, algorithms=["HS256"], audience=env.jwt_app_id)
+    except:
+        raise HTTPException(status_code=401, detail="Invalid Token")
+    
     room_id = token_data['room_id']
     email = token_data['context']['user']['email']
 
