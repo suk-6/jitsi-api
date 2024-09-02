@@ -49,12 +49,14 @@ async def get_rooms():
         with session:
             owner = session.exec(
                 select(RoomParticipantsSQLModel).where(
-                    RoomParticipantsSQLModel.isOwner == True
+                    RoomParticipantsSQLModel.room_id == room.id,
+                    RoomParticipantsSQLModel.isOwner == True,
                 )
             ).one()
             participants = session.exec(
                 select(RoomParticipantsSQLModel).where(
-                    RoomParticipantsSQLModel.isOwner == False
+                    RoomParticipantsSQLModel.room_id == room.id,
+                    RoomParticipantsSQLModel.isOwner == False,
                 )
             ).all()
 
