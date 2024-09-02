@@ -6,6 +6,7 @@ from datetime import datetime
 from uuid import uuid4
 
 from fastapi import HTTPException
+from sqlmodel import select
 
 from app.config import Settings
 from app.databases.redis import rd
@@ -94,3 +95,13 @@ async def terminate(room_id: str):
         session.add(owner)
         session.add_all(participants)
         session.commit()
+
+
+async def get(room_id: str):
+    with session:
+        room: RoomSQLModel = session.exec(select(RoomSQLModel).where(RoomSQLModel.id == room_id)).first()
+
+    if not room:
+        raise HTTPException(status_code=404, detail="Room not found")
+    
+    return room
