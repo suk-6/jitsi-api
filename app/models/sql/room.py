@@ -17,6 +17,8 @@ class RoomParticipantsSQLModel(SQLModel, table=True):
     __tablename__ = "participants"
     id: Optional[int] = Field(primary_key=True, default=None)
     email: str
+    avatar: str
+    name: str
     isOwner: bool
 
     room_id: str = Field(foreign_key="room.id")
