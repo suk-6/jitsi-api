@@ -31,21 +31,22 @@ class JibriSCP:
         """Close SSH client session"""
         self.ssh_client.close()
 
-    def get_recording_file(self, room_id: str):
+    def get_recording_file(self, room_id: str, room_name: str):
         """Get a single file from remote path"""
         try:
             with SCPClient(self.ssh_client.get_transport()) as scp:
                 sftp = self.ssh_client.open_sftp()
-                sftp.chdir(f"{env.jibri_recordings_path}/{room_id}")
-                file_list = sftp.listdir()
-                if not file_list:
-                    raise SCPException.message("No files found")
+                sftp.chdir(env.jibri_recordings_path)
+                folders = sftp.listdir()
+                for folder in folders:
+                    files = sftp.listdir(folder)
+                    for video_file in files:
+                        if room_name.lower() in video_file:
+                            scp.get(
+                                f"{env.jibri_recordings_path}/{folder}/{video_file}",
+                                f"/tmp/{room_id}.mp4",
+                            )
 
-                video_file = [f for f in file_list if f.endswith(".mp4")][0]
-
-                scp.get(
-                    f"{env.jibri_recordings_path}/{room_id}/{video_file}",
-                    f"/tmp/{room_id}.mp4",
-                )
+                            return
         except SCPException:
             raise SCPException.message
