@@ -1,7 +1,6 @@
 from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-
 from .dependencies import check_request_server
 from .config import Settings
 from .routers import room
