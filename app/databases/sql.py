@@ -2,6 +2,8 @@ from sqlmodel import SQLModel, create_engine, Session
 
 from app.config import Settings
 
+from app.models.sql.room import *
+
 env = Settings()
 
 engine = create_engine(
