@@ -25,6 +25,7 @@ async def new(user: JitsiTokenUser):
         "name": ''.join(random.choices(string.ascii_uppercase, k=8)),
         "owner": user.model_dump(),
         "participants": [],
+        "user_count": 0,
         "status": Status.ACTIVE.value,
     }
 
@@ -57,6 +58,7 @@ async def join(user: JitsiTokenUser, room_id: str):
             return f"{env.front_url}/{room['name']}?token={token}"
 
     room["participants"].append(user.model_dump())
+    room["user_count"] += 1
     rd.set(f"room:{room_id}", json.dumps(room))
 
     return f"{env.front_url}/{room["name"]}?token={token}"
@@ -69,13 +71,12 @@ async def leave(token: str):
         raise HTTPException(status_code=401, detail="Invalid Token")
     
     room_id = token_data['room_id']
-    email = token_data['context']['user']['email']
 
     room: RoomModel = json.loads(rd.get(f"room:{room_id}"))
-    room["participants"] = [p for p in room["participants"] if p["email"] != email]
+    room['user_count'] -= 1
     rd.set(f"room:{room_id}", json.dumps(room))
 
-    if len(room["participants"]) == 0:
+    if len(room["participants"]) <= 0:
         await terminate(room_id)
 
 
