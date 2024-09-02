@@ -16,6 +16,8 @@ redis-om = "^0.3.2"
 pyjwt = "^2.9.0"
 sqlmodel = "^0.0.22"
 psycopg2-binary = "^2.9.9"
+paramiko = "^3.4.1"
+scp = "^0.15.0"
 
 
 [build-system]
