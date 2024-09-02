@@ -8,4 +8,5 @@ class RoomModel(BaseModel):
     name: str
     owner: JitsiTokenUser
     participants: list[JitsiTokenUser]
+    user_count: int
     status: int
