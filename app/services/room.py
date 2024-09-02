@@ -11,6 +11,8 @@ from app.config import Settings
 from app.databases.redis import rd
 
 from app.models.room import RoomModel
+from app.databases import session
+from app.models.sql.room import RoomParticipantsSQLModel, RoomSQLModel
 from app.models.token import JitsiTokenPayload, JitsiTokenUser
 from app.models.status import Status
 
@@ -82,4 +84,12 @@ async def terminate(room_id: str):
     room["status"] = Status.TERMINATED.value
     rd.delete(f"room:{room_id}")
 
-    # 추후 DB에 저장하는 로직 추가
+    db_room = RoomSQLModel(id=room['id'], name=room['name'], status=room['status'])
+    owner = RoomParticipantsSQLModel(room_id=room['id'], email=room['owner']['email'], isOwner=True)
+    participants = [RoomParticipantsSQLModel(room_id=room['id'], email=p['email'], isOwner=False) for p in room['participants']]
+
+    with session:
+        session.add(db_room)
+        session.add(owner)
+        session.add_all(participants)
+        session.commit()
