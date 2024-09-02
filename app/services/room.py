@@ -86,8 +86,8 @@ async def terminate(room_id: str):
     rd.delete(f"room:{room_id}")
 
     db_room = RoomSQLModel(id=room['id'], name=room['name'], status=room['status'])
-    owner = RoomParticipantsSQLModel(room_id=room['id'], email=room['owner']['email'], isOwner=True)
-    participants = [RoomParticipantsSQLModel(room_id=room['id'], email=p['email'], isOwner=False) for p in room['participants']]
+    owner = RoomParticipantsSQLModel(room_id=room['id'], email=room['owner']['email'], avatar=room["owner"]['avatar'], name=room["owner"]['name'], isOwner=True)
+    participants = [RoomParticipantsSQLModel(room_id=room['id'], email=p['email'], avatar=p['avatar'], name=p['name'], isOwner=False) for p in room['participants']]
 
     with session:
         session.add(db_room)
