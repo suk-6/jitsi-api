@@ -76,7 +76,7 @@ async def leave(token: str):
     room['user_count'] -= 1
     rd.set(f"room:{room_id}", json.dumps(room))
 
-    if len(room["participants"]) <= 0:
+    if room["user_count"] <= 0:
         await terminate(room_id)
 
 
