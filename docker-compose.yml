@@ -1,5 +1,16 @@
 version: "3"
 
 services:
-    redis:
-        image: "redis:7.2.5"
+  postgres:
+    image: "postgres:16.4-alpine"
+    environment:
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"
+      POSTGRES_DB: "jitsi"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+  redis:
+    image: "redis:7.2.5"
+
+volumes:
+  postgres_data:
