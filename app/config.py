@@ -31,5 +31,12 @@ class Settings(BaseSettings):
     redis_host: str = "localhost"
     redis_port: int = 6379
 
+    # Jibri SSH
+    jibri_ssh_host: str = "localhost"
+    jibri_ssh_port: int = 22
+    jibri_ssh_user: str = "jibri"
+    jibri_ssh_password: str = "password"
+    jibri_recordings_path: str = "/recordings"
+
     # Environment File
     model_config = SettingsConfigDict(env_file=".env")
