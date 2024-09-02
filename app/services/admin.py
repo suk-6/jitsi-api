@@ -7,6 +7,7 @@ from app.databases import rd, session
 from app.models.room import RoomModel
 from app.models.sql.room import RoomParticipantsSQLModel, RoomSQLModel
 from app.remote.scp import JibriSCP
+from app.services.room import get
 
 
 async def get_rooms():
@@ -89,8 +90,10 @@ async def get_video(room_id: str):
     scp = JibriSCP()
 
     try:
-        scp.get_recording_file(room_id)
+        room: RoomSQLModel = await get(room_id)
+        scp.get_recording_file(room_id, room.name)
     except Exception as e:
+        print(e)
         raise HTTPException(status_code=500, detail=str(e))
     finally:
         scp.close_ssh_client()
