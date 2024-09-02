@@ -2,7 +2,6 @@ import paramiko
 from scp import SCPClient, SCPException
 
 from app.config import Settings
-from app.models import room
 
 env = Settings()
 
